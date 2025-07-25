@@ -1,0 +1,61 @@
+import ptbot
+import time
+import os
+import random
+from pytimeparse import parse
+from dotenv import load_dotenv
+
+
+def main():
+    def choose(author_id, question):
+        message = "Время вышло!"
+        bot.send_message(author_id, message)
+        print("Мне написал пользователь с ID:", author_id)
+        print("Он спрашивал:", question)
+        print("Я ответил:", message)
+
+    def notify(secs_left, chat_id, message_id):
+        bot.update_message(
+            chat_id,
+            message_id,
+            "Осталось {} секунд!".format(secs_left)
+            + "\n"
+            + render_progressbar(secs_left, 1),
+        )
+
+    def reply(chat_id, message):
+        message_id = bot.send_message(chat_id, "Запускаю таймер...")
+
+        bot.create_countdown(
+            parse(message),
+            notify,
+            chat_id=chat_id,
+            message_id=message_id,
+        )
+        bot.create_timer(
+            parse(message),
+            choose,
+            author_id=chat_id,
+            question=message
+            )
+
+    def render_progressbar(
+        total, iteration, prefix="", suffix="", length=30, fill="█", zfill="░"
+    ):
+        iteration = min(total, iteration)
+        percent = "{0:.1f}"
+        percent = percent.format(100 * (iteration / float(total)))
+        filled_length = int(length * iteration // total)
+        pbar = fill * filled_length + zfill * (length - filled_length)
+        return "{0} |{1}| {2}% {3}".format(prefix, pbar, percent, suffix)
+
+    load_dotenv()
+    TG_TOKEN = os.getenv("TG_TOKEN")
+    TG_CHAT_ID = "337897610"
+    bot = ptbot.Bot(TG_TOKEN)
+    bot.reply_on_message(reply)
+    bot.run_bot()
+
+
+if __name__ == "__main__":
+    main()
