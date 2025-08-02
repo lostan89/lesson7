@@ -8,10 +8,9 @@ from dotenv import load_dotenv
 load_dotenv()
 TG_TOKEN = os.getenv("TG_TOKEN")
 TG_CHAT_ID = "337897610"
-bot = ptbot.Bot(TG_TOKEN)
 
 
-def choose(author_id, question):
+def choose(author_id, question, bot):
     message = "Время вышло!"
     bot.send_message(author_id, message)
     print("Мне написал пользователь с ID:", author_id)
@@ -19,7 +18,7 @@ def choose(author_id, question):
     print("Я ответил:", message)
 
 
-def notify(secs_left, chat_id, message_id):
+def notify(secs_left, chat_id, message_id, bot):
     bot.update_message(
         chat_id,
         message_id,
@@ -29,16 +28,16 @@ def notify(secs_left, chat_id, message_id):
     )
 
 
-def reply(chat_id, message):
+def reply(chat_id, message, bot):
     message_id = bot.send_message(chat_id, "Запускаю таймер...")
-
     bot.create_countdown(
         parse(message),
         notify,
         chat_id=chat_id,
         message_id=message_id,
+        bot=bot
     )
-    bot.create_timer(parse(message), choose, author_id=chat_id, question=message)
+    bot.create_timer(parse(message), choose, author_id=chat_id, question=message, bot=bot)
 
 
 def render_progressbar(
@@ -53,7 +52,8 @@ def render_progressbar(
 
 
 def main():
-    bot.reply_on_message(reply)
+    bot = ptbot.Bot(TG_TOKEN)
+    bot.reply_on_message(reply, bot=bot)
     bot.run_bot()
 
 
