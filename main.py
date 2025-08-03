@@ -3,10 +3,9 @@ import time
 import os
 import random
 from pytimeparse import parse
-from dotenv import load_dotenv
+from decouple import config
 
-load_dotenv()
-TG_TOKEN = os.getenv("TG_TOKEN")
+TG_TOKEN = config("TG_TOKEN")
 TG_CHAT_ID = "337897610"
 
 
@@ -31,13 +30,11 @@ def notify(secs_left, chat_id, message_id, bot):
 def reply(chat_id, message, bot):
     message_id = bot.send_message(chat_id, "Запускаю таймер...")
     bot.create_countdown(
-        parse(message),
-        notify,
-        chat_id=chat_id,
-        message_id=message_id,
-        bot=bot
+        parse(message), notify, chat_id=chat_id, message_id=message_id, bot=bot
     )
-    bot.create_timer(parse(message), choose, author_id=chat_id, question=message, bot=bot)
+    bot.create_timer(
+        parse(message), choose, author_id=chat_id, question=message, bot=bot
+    )
 
 
 def render_progressbar(
