@@ -12,10 +12,7 @@ TG_CHAT_ID = "337897610"
 def choose(author_id, question, bot):
     message = "Время вышло!"
     bot.send_message(author_id, message)
-    print("Мне написал пользователь с ID:", author_id)
-    print("Он спрашивал:", question)
-    print("Я ответил:", message)
-
+    
 
 def notify(secs_left, chat_id, message_id, bot):
     bot.update_message(
